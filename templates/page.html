@@ -1,1 +1,38 @@
-
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AutoCare - Car Service Center</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--line:#334155;--tx:#e2e8f0;--mut:#94a3b8;--acc:#f97316;--acc2:#38bdf8}
+@media(prefers-color-scheme:light){:root{--bg:#f1f5f9;--card:#fff;--line:#e2e8f0;--tx:#0f172a;--mut:#64748b}}
+*{box-sizing:border-box}body{margin:0;font-family:Segoe UI,system-ui,sans-serif;background:var(--bg);color:var(--tx);display:flex;min-height:100vh}
+aside{width:220px;background:linear-gradient(180deg,#0b1220,#1e293b);padding:24px 14px;color:#e2e8f0;position:sticky;top:0;height:100vh}
+.logo{font-size:22px;font-weight:700;margin:0 8px 26px}.logo span{color:var(--acc)}
+aside a{display:block;padding:11px 14px;border-radius:10px;color:#cbd5e1;text-decoration:none;text-transform:capitalize;margin-bottom:4px}
+aside a:hover{background:#ffffff14}aside a.on{background:var(--acc);color:#fff;font-weight:600}
+main{flex:1;padding:30px 34px;min-width:0}h1{margin:0 0 4px;text-transform:capitalize}.sub{color:var(--mut);margin:0 0 22px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:24px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;border-top:4px solid var(--acc2)}
+.stat b{display:block;font-size:30px;margin-top:6px}.stat small{color:var(--mut)}
+.forms{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px}
+form{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:9px}
+form h3{margin:0 0 4px;font-size:15px;color:var(--acc)}
+input,select{padding:9px 11px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--tx)}
+label{font-size:12px;color:var(--mut)}
+button{padding:10px;border:0;border-radius:9px;background:var(--acc);color:#fff;font-weight:600;cursor:pointer}button:hover{filter:brightness(1.1)}
+.tw{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:auto}
+table{border-collapse:collapse;width:100%}th{background:#0000001f;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut)}
+th,td{padding:12px 16px;border-bottom:1px solid var(--line);white-space:nowrap}tr:hover td{background:#ffffff08}
+.b{padding:3px 10px;border-radius:99px;font-size:12px;font-weight:600;background:#64748b33}
+.b.billed{background:#22c55e33;color:#22c55e}.b.completed{background:#38bdf833;color:#38bdf8}.b.inprogress{background:#f9731633;color:#f97316}.b.open{background:#eab30833;color:#eab308}
+.msg{padding:12px 16px;border-radius:12px;margin-bottom:16px;font-weight:500}.msg.ok{background:#22c55e26;color:#16a34a}.msg.err{background:#ef444426;color:#ef4444}
+@media(max-width:760px){body{flex-direction:column}aside{width:100%;height:auto;position:static;display:flex;flex-wrap:wrap;gap:4px}.logo{width:100%;margin:0 0 8px}main{padding:18px}}
+</style></head><body>
+<aside><div class="logo">Auto<span>Care</span></div>{% for n in nav %}<a href="{{ url_for('dashboard') if n=='dashboard' else url_for('show',page=n) }}" class="{{ 'on' if n==page }}">{{n}}</a>{% endfor %}</aside>
+<main><h1>{{ page }}</h1><p class="sub">Car Service Center Management System</p>
+{% for cat,m in get_flashed_messages(with_categories=true) %}<div class="msg {{cat}}">{{m}}</div>{% endfor %}
+{% if stats %}<div class="stats">{% for l,v in stats %}<div class="stat"><small>{{l}}</small><b>{{v}}</b></div>{% endfor %}</div><h3>Recent service orders</h3>{% endif %}
+{% if forms %}<div class="forms">{% for act,title,fields in forms %}<form method="post" action="{{ url_for('do',action=act,page=page) }}"><h3>{{title}}</h3>
+{% for n,l,t in fields %}<label>{{l}}</label>{% if t.startswith('select:') %}<select name="{{n}}">{% for o in t[7:].split(',') %}<option>{{o}}</option>{% endfor %}</select>{% else %}<input name="{{n}}" type="{{t}}" {{ 'required' if n not in ('email','address','remarks') }}>{% endif %}{% endfor %}
+<button>Submit</button></form>{% endfor %}</div>{% endif %}
+<div class="tw"><table><tr>{% for c in cols %}<th>{{c.replace('_',' ')}}</th>{% endfor %}</tr>
+{% for r in rows %}<tr>{% for v in r %}<td>{% if cols[loop.index0]=='STATUS' %}<span class="b {{ v|replace(' ','')|lower }}">{{v}}</span>{% else %}{{ '' if v is none else v }}{% endif %}</td>{% endfor %}</tr>{% endfor %}</table></div>
+</main></body></html>
